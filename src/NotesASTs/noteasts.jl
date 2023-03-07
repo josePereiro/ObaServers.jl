@@ -10,25 +10,36 @@ function NotesASTs_init!(os::ObaServer)
     
 end
 
-function _parse_on_mtime_changed_cb(os, _, file)
-    
-    ast = parse_file(file)
-    set!(os, [:NotesASTs, "asts"], file, ast)
-
-    # on_parse
-    run_callbacks(os, (:NotesASTs, :on_parsed), (file,))
-
-    return nothing
+function _parse_file(os::ObaServer, notefile)
+    try
+        return parse_file(notefile)
+    catch err
+        _info("At Catch", ""; file = string(@__FILE__, ":", @__LINE__))
+        (err isa InterruptException) && return rethrow(err)
+        _msg_error(os, "PARSING ERROR", err; 
+            notefile, 
+            obsidian = string("[link](", _obsidian_url(os, notefile), ")" ),
+        )
+        rethrow(err)
+    end
 end
 
 export noteast
 function noteast(os::ObaServer, name)
+
     file = cached_notefile(os, name)
     isnothing(file) && error("Note not found, name: ", name)
-    sync_files!(os, file) # handle disk-cache synching
-    return get!(os, [:NotesASTs, "asts"], file) do
-        parse_file(file)
+    
+    # handle disk-cache synching
+    sync_files!(os, file) 
+
+    # handle first time
+    if !haskey(os, [:NotesASTs, "asts"], file)
+        ast = _parse_file(os, file)
+        set!(os, [:NotesASTs, "asts"], file, ast)
     end
+    
+    return get(os, [:NotesASTs, "asts"], file) 
 end
 
 export foreach_noteast

@@ -11,6 +11,8 @@ module ObaServers
     using OrderedCollections
     using Dates
 
+    # TODO: Make a better error handling
+
     #! include Types
     include("Types/ObaServer.jl")
 
@@ -28,6 +30,7 @@ module ObaServers
     
     #! include NotesASTs
     include("NotesASTs/noteasts.jl")
+    include("NotesASTs/noteasts_cbs.jl")
     
     #! include ServerLoop
     include("ServerLoop/loop.jl")
@@ -39,6 +42,7 @@ module ObaServers
 
     #! include ObaScripts
     include("ObaScripts/globals.jl")
+    include("ObaScripts/msgfiles.jl")
     include("ObaScripts/obascripts.jl")
     include("ObaScripts/obascripts_cbs.jl")
     include("ObaScripts/runscripts.jl")

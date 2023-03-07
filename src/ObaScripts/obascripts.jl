@@ -2,6 +2,8 @@ function ObaScripts_init!(os::ObaServer)
 
     # data
     set!(os, :ObaScripts, Dict())
+    set!(os, [:ObaScripts], "msgs_subdir", "")
+    set!(os, [:ObaScripts], "open_msgs", true)
     
     # register callbacks
     register_callback!(os, (:ObaScripts, :before_exec))

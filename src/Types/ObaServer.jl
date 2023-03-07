@@ -4,14 +4,10 @@ struct ObaServer
     ObaServer() = new(Dict{Symbol, Dict{Any, Any}}())
 end
 
-function Base.show(io::IO, e::ObaServer)
+function Base.show(io::IO, os::ObaServer)
     println(io, "ObaServer")
-    # for (subk, subval) in e.state
-    #     println(io, subk)
-    #     for (k, val) in subval
-    #         println(io, "  ", k, " => ", val)
-    #     end
-    # end
+    try; println(io, "    vault: ", vault_dir(os)) catch err; end
+    println(io, "    subsystems: ", collect(keys(os.state)))
     return nothing
 end
 
@@ -22,9 +18,6 @@ function _subkeys(os::ObaServer, keys::Vector)
     end
     return dict
 end
-
-# Base.getindex(os::ObaServer, valkey::Symbol) = getindex(os.state, valkey)
-# Base.getindex(os::ObaServer, subkeys::Vector, valkey) = getindex(_subkeys(os, subkeys), valkey)
 
 Base.get(os::ObaServer, valkey::Symbol) = getindex(os.state, valkey)
 Base.get(os::ObaServer, valkey::Symbol, deft) = get(os.state, valkey, deft)
@@ -47,6 +40,9 @@ set!(os::ObaServer, subkeys::Vector, valkey, val) = setindex!(_subkeys(os, subke
 set!(f::Function, os::ObaServer, subkeys::Vector, valkey) = setindex!(_subkeys(os, subkeys), f(), valkey)
 
 Base.keys(os::ObaServer) = keys(os.state)
+
+Base.delete!(os::ObaServer, valkey::Symbol) = delete!(os.state, valkey)
+Base.delete!(os::ObaServer, subkeys::Vector, valkey) = delete!(_subkeys(os, subkeys), valkey)
 
 Base.haskey(os::ObaServer, valkey::Symbol) = haskey(os.state, valkey)
 Base.haskey(os::ObaServer, subkeys::Vector, valkey) = haskey(_subkeys(os, subkeys), valkey)

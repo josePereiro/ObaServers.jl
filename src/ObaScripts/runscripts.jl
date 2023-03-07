@@ -86,8 +86,6 @@ function _eval_obascript!(os::ObaServer, script_ast::ObaScriptBlockAST)
 end
 
 function _run_notefile!(os::ObaServer, notefile::AbstractString)
-
-    # vault = getstate!(() -> dirname(notefile), VAULT_GLOBAL_KEY)
     
     # init
     set!(os, [:ObaScripts], "processed_scripts_hashes", UInt64[])
@@ -114,11 +112,8 @@ function _run_notefile!(os::ObaServer, notefile::AbstractString)
             set!(os, [:ObaScripts], "curr_notedir", dirname(notefile))
 
         catch err
-            _error("ERROR PARSING", err, "!"; 
-                notefile, 
-                obsidian = _obsidian_url(vault_dir(os), notefile),
-            )
-            return false
+            _info("At Catch", ""; file = string(@__FILE__, ":", @__LINE__))
+            rethrow(err)
         end
 
         # handle ignore file tags
@@ -204,12 +199,14 @@ function _run_notefile!(os::ObaServer, notefile::AbstractString)
                 break # for child in AST
 
             catch err
-                _error("ERROR", err, "!"; 
+                _info("At Catch", ""; file = string(@__FILE__, ":", @__LINE__))
+                (err isa InterruptException) && return rethrow(err)
+                _msg_error(os, "ERROR", err; 
                     notefile = string(notefile, ":", child.line), 
-                    obsidian = _obsidian_url(vault_dir(os), notefile),
-                    child
+                    obsidian = string("[link](", _obsidian_url(os, notefile), ")" ),
+                    src = string("\n\n", headless_source(child), "\n\n")
                 )
-                return false
+                rethrow(err)
             end
         
         end # for child in AST

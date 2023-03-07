@@ -43,4 +43,3 @@ function touch_trigger_file(os::ObaServer)
     write(trfile, _generate_rand_id(8))
     return true
 end
-

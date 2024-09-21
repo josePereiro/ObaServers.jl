@@ -1,4 +1,4 @@
-function _parse_on_mtime_changed_cb(os, _, file)
+function _parse_note_content_changed_cb(os, _, file)
     
     delete!(os, [:NotesASTs, "asts"], file)
     ast = _parse_file(os, file)
@@ -8,8 +8,4 @@ function _parse_on_mtime_changed_cb(os, _, file)
     run_callbacks(os, (:NotesASTs, :on_parsed), (file,))
 
     return nothing
-end
-
-function _parse_on_mtime_changed_cb(os, _, args...)
-    sync_files!(os, notefile)
 end

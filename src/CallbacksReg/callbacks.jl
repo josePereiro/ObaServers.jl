@@ -13,7 +13,7 @@ function callback_registry(os::ObaServer)
 end
 function callback_registry(os::ObaServer, key)
     cbreg = callback_registry(os)
-    return get(cbreg, key) do 
+    return get!(cbreg, key) do 
         _warn("WARNNING: Callback group not registred", "?"; key)
         OrderedSet{Tuple{Int, Module, Symbol}}()
     end
@@ -48,8 +48,9 @@ The functions are responsable for calling reparse!/write!! to validate the ast.
 The user must handle duplication avoidance.
 For see all events explore `callback_registry()` keys
 """
-function register_callback!(os::ObaServer, call_key, mod::Module, fname::Symbol, p = 20)
+function register_callback!(os::ObaServer, call_key, mod::Module, fname::Symbol, p::Int = 20)
     cbreg, callbacks = _register_callback!(os, call_key)
+    
     # Add flag registry callback
     isempty(callbacks) && push!(callbacks, (-10000, ObaServers, :_FlagsRegs_flipflags_cbs))
     
@@ -63,7 +64,7 @@ function register_callback!(os::ObaServer, call_key, mod::Module, fname::Symbol,
     return nothing
 end
 
-register_callback!(os::ObaServer, call_key, fname::Symbol, p = 20) = 
+register_callback!(os::ObaServer, call_key, fname::Symbol, p::Int = 20) = 
     register_callback!(os, call_key, Main, fname, p)
 
 function _run_callbacks(os::ObaServer, call_key, args::Tuple)

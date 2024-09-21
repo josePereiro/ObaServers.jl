@@ -1,6 +1,6 @@
 ## ------------------------------------------------------------------
 # HEAD
-function _handle_script_id_refactoring!(script_ast::ObaScriptBlockAST, mdfile)
+function _handle_script_id_refactoring!(script_ast::ObaScriptBlockAST, notefile)
     
     script_id = get_param(script_ast, "id", nothing)
     
@@ -13,7 +13,7 @@ function _handle_script_id_refactoring!(script_ast::ObaScriptBlockAST, mdfile)
     # info
     _info("Refactoring source", "-"; 
         embtag, 
-        mdfile = string(mdfile, ":", script_ast.line),
+        notefile = string(notefile, ":", script_ast.line),
         newsrc = string("\n\n", script_ast.src),
     )
 
@@ -40,16 +40,29 @@ function _replace_base_macros(src)
     return src
 end
 
-export up_currscript!
 """
 When a reparse! is made, new childs are created and the globals must be recomputed.
 It assumes the id is unchanged.
 """
 
 function _eval_obascript!(os::ObaServer, script_ast::ObaScriptBlockAST)
+
+    _is_file = (basename(curr_notefile(os)) == "ActionTags.oba.md")
     
     # emb_script
     script_source = get(script_ast, :script, "")
+    
+    _is_file && (println("-"^60))
+    _is_file && (println("-"^60))
+    _is_file && (println("-"^60))
+    _is_file && (println("-"^60))
+    _is_file && (println("-"^60))
+    _is_file && (@show script_source)
+    _is_file && (@show script_ast[:head])
+    _is_file && (script_ast = curr_scriptast(os))
+    _is_file && (script_source = get(script_ast, :script, ""))
+    _is_file && (@show script_source)
+    _is_file && (@show script_ast[:head])
     
     # reformat source
     script_source = _replace_base_macros(script_source)
@@ -62,7 +75,7 @@ function _eval_obascript!(os::ObaServer, script_ast::ObaScriptBlockAST)
     # info
     _info("Running ObaScriptBlockAST", "-"; 
         head = source(script_ast[:head]),
-        notefile = string(curr_notefile(os), ":", curr_scripline(os)),
+        notefile = string(curr_notefile(os), ":", curr_scriptline(os)),
         obsidian = _obsidian_url(vault_dir(os), curr_notefile(os)),
         source = string("\n\n", script_source, "\n"), 
     )
@@ -78,7 +91,7 @@ function _eval_obascript!(os::ObaServer, script_ast::ObaScriptBlockAST)
         __AST__ = $(curr_ast(os))
         __SCRIPT_AST__ = $(curr_scriptast(os))
         __SCRIPT_ID__ = $(curr_scriptid(os))
-        __LINE__ = $(curr_scripline(os))
+        __LINE__ = $(curr_scriptline(os))
     end
     Main.eval(expr)
     include_string(Main, script_source)
@@ -86,6 +99,11 @@ function _eval_obascript!(os::ObaServer, script_ast::ObaScriptBlockAST)
 end
 
 function _run_notefile!(os::ObaServer, notefile::AbstractString)
+
+    # dev info
+    is_devmode(os) && _info("At _run_notefile!", "*"; 
+        notefile = string(notefile)
+    )
     
     # init
     set!(os, [:ObaScripts], "processed_scripts_hashes", UInt64[])
@@ -93,8 +111,15 @@ function _run_notefile!(os::ObaServer, notefile::AbstractString)
     
     # flags
     sync_files!(os, notefile)
-    is_modified_notefile = on_flag!(os, (:FileTracker, :on_mtime_changed), "_run_notefile!", notefile)
-    is_loop_startup = on_flag!(os, (:Loop, :on_startup), "_run_notefile!", notefile)
+    is_modified_notefile = has_true_flag!(os, 
+        (:FileTracker, :on_content_changed),        # call key
+        "_run_notefile!",                           # flag owner
+        notefile                                    # args
+    )
+    is_loop_startup = has_true_flag!(os, 
+        (:Loop, :on_startup),                       # call key
+        ("_run_notefile!", notefile)                # flag owner
+    )
 
     while true
         
@@ -105,11 +130,6 @@ function _run_notefile!(os::ObaServer, notefile::AbstractString)
         AST = nothing
         try
             AST = noteast(os, notefile) # this call sync_file!
-
-            # set global
-            set!(os, [:ObaScripts], "curr_ast", AST)
-            set!(os, [:ObaScripts], "curr_notefile", notefile)
-            set!(os, [:ObaScripts], "curr_notedir", dirname(notefile))
 
         catch err
             _info("At Catch", ""; file = string(@__FILE__, ":", @__LINE__))
@@ -140,14 +160,14 @@ function _run_notefile!(os::ObaServer, notefile::AbstractString)
 
             # dev info
             is_devmode(os) && _info("At Script", "="; 
-                mdfile = string(notefile, ":", child.line),
+                notefile = string(notefile, ":", child.line),
                 src = string("\n\n", child.src),
             )
             
             # set global
-            set!(os, [:ObaScripts], "curr_scriptast", child)
-            set!(os, [:ObaScripts], "curr_scripline", child.line)
-            set!(os, [:ObaScripts], "curr_scriptid", get_param(child, "id"))
+            scrip_id = get_param(child, "id", nothing)
+            set!(os, [:ObaScripts], "curr_notefile", notefile)
+            set!(os, [:ObaScripts], "curr_scrip_id", scrip_id)
             
             # refactor if script_id is missing
             refactored = _handle_script_id_refactoring!(child, notefile)

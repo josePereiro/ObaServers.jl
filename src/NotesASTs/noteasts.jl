@@ -6,7 +6,10 @@ function NotesASTs_init!(os::ObaServer)
     
     # callbacks
     register_callback!(os, (:NotesASTs, :on_parsed)) 
-    register_callback!(os, (:FileTracker, :on_mtime_changed), ObaServers, :_parse_on_mtime_changed_cb)
+    register_callback!(os, 
+        (:FileTracker, :on_content_changed, :NotesASTs), 
+        ObaServers, :_parse_note_content_changed_cb
+    )
     
 end
 
@@ -31,15 +34,15 @@ function noteast(os::ObaServer, name)
     isnothing(file) && error("Note not found, name: ", name)
     
     # handle disk-cache synching
-    sync_files!(os, file) 
+    sync_files!(os, file, (:NotesASTs,)) 
 
     # handle first time
-    if !haskey(os, [:NotesASTs, "asts"], file)
-        ast = _parse_file(os, file)
-        set!(os, [:NotesASTs, "asts"], file, ast)
+    asts = get(os, [:NotesASTs], "asts")
+    if !haskey(asts, file)
+        asts[file] = _parse_file(os, file)
     end
     
-    return get(os, [:NotesASTs, "asts"], file) 
+    return asts[file]
 end
 
 export foreach_noteast

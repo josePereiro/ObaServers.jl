@@ -50,15 +50,25 @@ function run_server_loop(os::ObaServer;
         
         try
             set!(os, [:ServerLoop], "errorless_startup", false)
+
+            # run on action callbacks
+            t0 = now()
             
             # Run on on_startup callback
             run_callbacks(os, (:Loop, :on_startup), ())
+
+            # TODO: move to callback
+            _info("Done", ""; 
+                time = ObaBase._canonicalize(now() - t0)
+            )
             
             set!(os, [:ServerLoop], "errorless_startup", true)
             
         catch err
 
             _info("At catch", ""; file = string(@__FILE__, ":", @__LINE__))
+
+            rethrow(err)
             
             # on_startup_err
             run_callbacks(os, (:Loop, :on_startup_err), ())
@@ -70,9 +80,9 @@ function run_server_loop(os::ObaServer;
 
                 sync_trigger(os, (:server_startup_loop,))
 
-                is_triggered = on_flag!(os, 
+                is_triggered = has_true_flag!(os, 
                     (:Trigger, :on_trigger, :server_startup_loop), 
-                    "run_server_loop", "startup"
+                    ("run_server_loop", "startup")
                 )
                 is_triggered && break
                 
@@ -118,9 +128,9 @@ function run_server_loop(os::ObaServer;
                 # wait for iter
                 sync_trigger(os, (:server_action_loop,))
 
-                is_triggered = on_flag!(os, 
+                is_triggered = has_true_flag!(os, 
                     (:Trigger, :on_trigger, :server_action_loop), 
-                    "run_server_loop", "action_loop"
+                    ("run_server_loop", "action_loop")
                 )
                 is_triggered && break
                 
@@ -147,6 +157,7 @@ function run_server_loop(os::ObaServer;
         
         catch err
             _info("At Catch", ""; file = string(@__FILE__, ":", @__LINE__))
+            rethrow(err)
             
             # on_startup_err
             run_callbacks(os, (:Loop, :on_action_err), ())

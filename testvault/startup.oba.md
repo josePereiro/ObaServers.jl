@@ -47,7 +47,7 @@ iter1 = get(__OS__, [:TestsExtras], "iter1")
 iter_u = get(__OS__, [:TestsExtras], "iter_u", -1)
 
 # Nothing should be modifying this file for it to work
-# This test both, that -u runs at least one and at the begining
+# This test both, that -u runs at least once and at the begining
 _test = (iter_u != -1) && iter1 > iter_u
 set!(__OS__, [:Tests], "modified", _test)
 ```

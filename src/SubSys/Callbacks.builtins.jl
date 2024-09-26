@@ -14,6 +14,6 @@ function _register_builtin_callbacks!()
     register_callback!(_Parser_onupdate!, "Vault.callbacks.note.onupdate", typemin(Int))
 
     register_callback!("Vault.callbacks.notes.endpass") do
-        run_callbacks!("Parser.callbacks.vault.endparse")
+        run_callbacks!("Parser.callbacks.vault.onparsed")
     end
 end

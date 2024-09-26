@@ -1,7 +1,7 @@
 name = "ObaServers"
 uuid = "25f8d37a-575f-481b-82a1-d70056d35966"
 authors = ["josePereiro <jose.pereiro.personal@gmail.com> and contributors"]
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

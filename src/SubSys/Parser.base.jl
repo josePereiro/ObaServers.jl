@@ -15,17 +15,15 @@ function _Parser_onsetup_cb!()
 end
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-# Will be registrered at "Server.loop.callbacks.onloop"
+# Will be registrered at "Server.loop.callbacks.oniter"
 # Parse all modified/new files
 function _Parser_onupdate!()
     asts_reg = getstate(Dict{String, ObaAST}, "Parser.notes.asts")
     fn = first(getstate("Callbacks.call.args"))
-    @show fn
     # parse
     try
         ast = parse_file(fn)
         asts_reg[fn] = ast
-        @show length(asts_reg)
         run_callbacks!("Parser.callbacks.note.onparsed", fn, ast)
     catch err
         # TODO: handle error

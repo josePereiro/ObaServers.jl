@@ -43,9 +43,9 @@ uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
 version = "0.1.10"
 
 [[deps.FilesTreeTools]]
-git-tree-sha1 = "4f5748f5b2c8e41858be46a6c835988f7cc038eb"
+git-tree-sha1 = "0b7f63e47962954fd37e6d471a6d9c82abf68d9e"
 uuid = "638332cd-b357-4bf5-bfa2-3531168477f5"
-version = "0.6.0"
+version = "0.7.0"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]

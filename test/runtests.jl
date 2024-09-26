@@ -5,17 +5,66 @@ using Test
 @testset "ObaServers.jl" begin
 
     # globals
-    vault_dir = joinpath(tempdir(), "test.vault")
+    let
+        vault_dir = joinpath(pkgdir(ObaServers), "testvault")
+        @assert isdir(vault_dir)
+        run_init!(vault_dir) do
+            # onsetup
+            
+            # config
+            setstate!("Server.loop.trigger.hit.counter.max", 5)
     
-    # test trigger file pull/touch
-    try
-        oba = ObaServer(vault_dir)
-        flag = pull_trigger_file!(oba)
-        @test !flag 
-        touch_trigger_file(oba)
-        flag = pull_trigger_file!(oba)
-        @test flag 
-    catch err
-        rm(vault_dir; recursive = true, force = true)
+            # callbacks
+            register_callback!("Server.loop.callbacks.trigger.onhit") do
+                @test true
+                println("Server.loop.callbacks.trigger.onhit")
+                counter = getstate("Server.loop.trigger.hit.counter")
+                if counter == 2
+                    foreach_note() do fn
+                        touch(fn)
+                        return :break 
+                    end
+                end
+            end
+            register_callback!("Server.loop.callbacks.trigger.onmiss") do
+                # boostrap
+                touch_trigger_file()
+            end
+            register_callback!("Vault.callbacks.notes.endpass") do
+    
+                news_reg = getstate(Vector{String}, "Vault.notes.news")
+                mod_reg = getstate(Vector{String}, "Vault.notes.modified")
+                up_reg = getstate(Vector{String}, "Vault.notes.updates")
+                
+                @show length(news_reg)
+                @show length(mod_reg)
+                @show length(up_reg)
+    
+                counter = getstate("Server.loop.trigger.hit.counter")
+                if counter == 0
+                    @test length(news_reg) == 2
+                    @test length(mod_reg) == 0
+                    @test length(up_reg) == 2
+                end
+                if counter == 1
+                    @test length(news_reg) == 0
+                    @test length(mod_reg) == 0
+                    @test length(up_reg) == 0
+                end
+                if counter == 2
+                    @test length(news_reg) == 0
+                    @test length(mod_reg) == 1
+                    @test length(up_reg) == 1
+                end
+                if counter == 3
+                    @test length(news_reg) == 0
+                    @test length(mod_reg) == 0
+                    @test length(up_reg) == 0
+                end
+                
+            end
+        end
+        run_loop!()
     end
+    
 end

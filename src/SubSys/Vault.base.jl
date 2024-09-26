@@ -51,7 +51,7 @@ end
 
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-# Will be registrered at "Server.loop.callbacks.onloop"
+# Will be registrered at "Server.loop.callbacks.oniter"
 # Visit all files and run callbacks depending on its modification state
 function _Vault_notes_onepass!()
 

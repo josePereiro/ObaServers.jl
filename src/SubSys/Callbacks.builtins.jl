@@ -10,7 +10,7 @@ function _register_builtin_callbacks!()
     register_callback!(_TriggerFile_onsetup_cb!, "Server.setup.callbacks.onsetup", typemin(Int))
     register_callback!(_Parser_onsetup_cb!, "Server.setup.callbacks.onsetup", typemin(Int))
     
-    register_callback!(_Vault_notes_onepass!, "Server.loop.callbacks.onloop", typemin(Int))
+    register_callback!(_Vault_notes_onepass!, "Server.loop.callbacks.oniter", typemin(Int))
     register_callback!(_Parser_onupdate!, "Vault.callbacks.note.onupdate", typemin(Int))
 
     register_callback!("Vault.callbacks.notes.endpass") do

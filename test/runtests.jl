@@ -13,8 +13,14 @@ using Test
             
             # config
             setstate!("Server.loop.trigger.hit.counter.max", 5)
-    
+            
             # callbacks
+            register_callback!("Server.setup.callbacks.onsetup") do
+                # test configuration loading
+                # see ObaServer.json
+                @time getstate("test.config") === 123
+            end
+            
             register_callback!("Server.loop.callbacks.trigger.onhit") do
                 @test true
                 println("Server.loop.callbacks.trigger.onhit")

@@ -46,8 +46,8 @@ function run_callbacks!(key::String, args...)
     setstate!("Callbacks.call.args", args)
 
     callfuns = callback_functions()
-    haskey(callfuns, key) || return nothing
-    for fun in callfuns[key]
+    funvec = get!(Vector{Function}, callfuns, key)
+    for fun in funvec
         ret = fun()
         ret === :break && break
     end
@@ -59,4 +59,19 @@ end
 function emptycallbacks!()
     empty!(callback_functions())
     empty!(callback_priorities())
+end
+
+# -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
+function show_callbacks()
+    _callfuns = callback_functions()
+    _keys = collect(keys(_callfuns))
+    sort!(_keys)
+    for k in _keys
+        v = _callfuns[k]
+        printstyled(repr(k); color = :blue)
+        print(" -> ")
+        v = join(map(repr, v), ", ")
+        printstyled("[", v, "]"; color = :green)
+        println()
+    end
 end

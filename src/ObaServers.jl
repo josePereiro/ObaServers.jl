@@ -37,6 +37,7 @@ module ObaServers
     include("SubSys/Callbacks.builtins.jl")
     include("SubSys/Parser.base.jl")
     include("SubSys/Server.base.jl")
+    include("SubSys/Server.config.jl")
     include("SubSys/Server.init.jl")
     include("SubSys/Server.loop.jl")
     include("SubSys/TriggerFiles.jl")

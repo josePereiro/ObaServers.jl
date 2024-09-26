@@ -34,6 +34,8 @@ function _Parser_onupdate!()
     return 
 end
 
+# -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
+_Parser_run_onparsed_cb!() = run_callbacks!("Parser.callbacks.vault.onparsed")
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 # /Users/Pereiro/Documents/Obsidian/notebook/2_notes/@mezardInformationPhysicsComputation2009.md

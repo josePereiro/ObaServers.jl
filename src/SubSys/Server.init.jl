@@ -1,7 +1,7 @@
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 # DefaultInit
-function run_init!(onconfig::Function, vault_dir::AbstractString;
-        # dev_mode = false # TODO: move to onconfig
+function run_init!(onsetup::Function, vault_dir::AbstractString;
+        # dev_mode = false # TODO: move to onsetup
     )
 
     # empty server
@@ -12,8 +12,11 @@ function run_init!(onconfig::Function, vault_dir::AbstractString;
     setstate!("Callbacks.registry.functions", Dict{String, Vector{Function}}())
     setstate!("Callbacks.registry.priorities", Dict{String, Vector{Int}}())
     
-    # onconfig
-    onconfig()
+    # source config
+    source_configfile!()
+
+    # direct onsetup
+    onsetup()
 
     # register builtin
     _register_builtin_callbacks!()

@@ -15,3 +15,4 @@ function _write_json(path::String, obj; indent = 1)
     end
 end
 
+_func_vec() = Function[]

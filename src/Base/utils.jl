@@ -16,3 +16,21 @@ function _write_json(path::String, obj; indent = 1)
 end
 
 _func_vec() = Function[]
+
+function locate_stateid(pt)
+    srcdir = joinpath(pkgdir(ObaServers), "src")
+    for (root, dirs, files) in walkdir(srcdir)
+        for file in files
+            endswith(file, ".jl") || continue
+            path = joinpath(root, file)
+            # println(path) # path to files
+            for (li, line) in enumerate(eachline(path))
+                contains(line, pt) || continue
+                printstyled(line; color = :green)
+                println()
+                printstyled(path, ":", li; color = :blue)  
+                println()
+            end
+        end
+    end
+end

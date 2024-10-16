@@ -17,7 +17,8 @@ end
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 # Will be registrered at "Server.loop.callbacks.oniter"
 # Parse all modified/new files
-function _Parser_onupdate!()
+function _Parser_onupdate_cb!()
+    getstate(Bool, "Parser.notes.flags.doparse", false) || return
     asts_reg = getstate(Dict{String, ObaAST}, "Parser.notes.asts")
     fn = first(getstate("Callbacks.call.args"))
     # parse
@@ -35,14 +36,23 @@ function _Parser_onupdate!()
 end
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
+# called on "Vault.callbacks.notes.endpass"
 _Parser_run_onparsed_cb!() = run_callbacks!("Parser.callbacks.vault.onparsed")
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-# /Users/Pereiro/Documents/Obsidian/notebook/2_notes/@mezardInformationPhysicsComputation2009.md
 function noteast(name)
-    fn = isabspath(name) ? name : joinpath(getstate("Vault.root.path"), name)
+    fn = note_path(name)
     asts_reg = getstate(Dict{String, ObaAST}, "Parser.notes.asts")
     return asts_reg[fn]
+end
+
+# parse from file and update cache
+function noteast!(name)
+    fn = note_path(name)
+    ast = parse_file(fn)
+    asts_reg = getstate(Dict{String, ObaAST}, "Parser.notes.asts")
+    asts_reg[fn] = ast
+    return ast
 end
 
 # # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .

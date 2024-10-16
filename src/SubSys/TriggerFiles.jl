@@ -35,13 +35,13 @@ end
 # TOSYNC with oba-plugin code
 
 # fake a trigger update
-function touch_trigger_file()
+function touch_trigger_file(;path = "")
     _trfile = getstate("TriggerFile.path")
     isempty(_trfile) && return false
     mkpath(dirname(_trfile))
     _write_json(_trfile, Dict(
         "hash" => _generate_rand_id("T.", 8), 
-        "file" => ""
+        "path" => path
     ))
     return true
 end

@@ -21,6 +21,20 @@ getstate!(f::Function, T::Type, key::String) = getstate!(f, key)::T
 setstate!(key::String, val) = setindex!(getstate(), val, key)
 setstate!(f::Function, key::Symbol) = setindex!(getstate(), f(), key)
 
+# Allowes st += 1 kind of update
+function upstate!(upfun::Function, key)
+    st = getstate(key)
+    st = upfun(st)
+    setstate!(key, val)
+    return st
+end
+function upstate!(upfun::Function, key, val0)
+    st = getstate(key, val0)
+    st = upfun(st)
+    setstate!(key, val)
+    return st
+end
+
 delstate!(key::String) = delete!(getstate(), key)
 
 statekeys() = keys(getstate())

@@ -15,7 +15,7 @@ function _Vault_onsetup_cb!()
     getstate!("Vault.notes.paths.cache", Dict{String, String}()) # TODO: think about it
     setstate!("Vault.notes.FileMTimeEvent", FileMTimeEvent())
     setstate!("Vault.notes.modified", String[])
-    setstate!("Vault.notes.news", String[])
+    setstate!("Vault.notes.new", String[])
     setstate!("Vault.notes.updates", String[])
 end
 
@@ -23,6 +23,19 @@ end
 # define what is a note file
 function is_notefile(path; note_ext = ".md")
     endswith(path, note_ext) || return false
+end
+
+# check cache and isfile, otherwise return abspath
+function note_path(path0)
+    path_cache = getstate(Dict{String, String}, "Vault.notes.paths.cache")
+    if haskey(path_cache, path0)
+        path = path_cache[path0]
+        isfile(path) && return path
+        delete!(path_cache, path0)
+    end
+    path = isabspath(path0) ? path0 : joinpath(getstate(String, "Vault.root.path"), path0)
+    path_cache[path0] = path
+    return path
 end
 
 
@@ -38,29 +51,16 @@ function foreach_note(f::Function)
 end
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-# TODO: Port to EasyEvent.jl
-function _event_type!(evt::AbstractEvent, key)
-    _isnew = !istraking(evt, key)
-    if _isnew
-        update!(evt, key)
-        return :new
-    end
-    _ismod = pull_event!(evt, key)
-    return _ismod ? :mod : :same
-end
-
-
-# -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 # Will be registrered at "Server.loop.callbacks.oniter"
 # Visit all files and run callbacks depending on its modification state
-function _Vault_notes_onepass!()
+function _Vault_notes_onepass_cb!()
 
     fevt =  getstate(FileMTimeEvent, "Vault.notes.FileMTimeEvent")
-    news_reg = getstate(Vector{String}, "Vault.notes.news")
+    new_reg = getstate(Vector{String}, "Vault.notes.new")
     mod_reg = getstate(Vector{String}, "Vault.notes.modified")
     up_reg = getstate(Vector{String}, "Vault.notes.updates")
 
-    empty!(news_reg)
+    empty!(new_reg)
     empty!(mod_reg)
     empty!(up_reg)
     foreach_note() do fn
@@ -68,11 +68,11 @@ function _Vault_notes_onepass!()
         run_callbacks!("Vault.callbacks.note.foreach", fn)
         
         # parse if new or modified
-        _etype = _event_type!(fevt, fn)
+        _etype = event_type!(fevt, fn)
         _etype === :same && return
         if _etype === :new
             run_callbacks!("Vault.callbacks.note.onnew", fn)
-            push!(news_reg, fn)
+            push!(new_reg, fn)
         end
         if _etype === :mod
             run_callbacks!("Vault.callbacks.note.onmod", fn)
@@ -86,6 +86,14 @@ function _Vault_notes_onepass!()
     return 
 end
 
+function focused_note()
+    json::Dict = trigger_json()
+    curr_note::String = get(json, "path", "")
+    isempty(curr_note) && return ""
+    curr_note = note_path(curr_note)
+    !isfile(curr_note) && return ""
+    return curr_note
+end
 
 # function cached_notefile(os::ObaServer, name)
 #     name = basename(name)

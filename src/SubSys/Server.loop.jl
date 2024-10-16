@@ -16,9 +16,11 @@ end
 function run_loop!(oniter::Function)
 
     
-    # onsetup callbacks
-    # run_callbacks!("Server.loop.callbacks.onsetup")
+    !getstate("Server.init.flags.runned", false) && 
+        error("Do `run_init!` first!")
 
+    # counters
+    iter_counter = 0
     hit_counter = 0
     miss_counter = 0
     tmr = getstate("Server.loop.trigger.pulling.SleepTimer")
@@ -30,18 +32,19 @@ function run_loop!(oniter::Function)
         println()
 
         @show hit_counter
-        setstate!("Server.loop.trigger.hit.counter", hit_counter)
-        setstate!("Server.loop.trigger.miss.counter", miss_counter)
 
         while !getstate(Bool, "Server.loop.flags.break")
+
+            run_callbacks!("Server.loop.callbacks.trigger.loop.init")
             
             # pull trigger
             if pull_trigger_file!()
-
+                
                 run_callbacks!("Server.loop.callbacks.trigger.onhit")
                 
                 # up counter
                 hit_counter += 1
+                setstate!("Server.loop.trigger.hit.counter", hit_counter)
                 if hit_counter > getstate(Int, "Server.loop.trigger.hit.counter.max")
                     run_callbacks!("Server.loop.callbacks.trigger.hit.counter.onmax")
                     setstate!("Server.loop.flags.break", true)
@@ -54,6 +57,7 @@ function run_loop!(oniter::Function)
 
                 # up counter
                 miss_counter += 1
+                setstate!("Server.loop.trigger.miss.counter", miss_counter)
                 if miss_counter > getstate(Int, "Server.loop.trigger.miss.counter.max")
                     run_callbacks!("Server.loop.callbacks.trigger.miss.counter.onmax")
                     setstate!("Server.loop.flags.break", true)
@@ -61,10 +65,11 @@ function run_loop!(oniter::Function)
                 
                 sleep!(tmr)
             end
-        end
+        end # trigger loop
 
         # loop body
 
+        # check break
         getstate(Bool, "Server.loop.flags.break") && break
 
         # oniter direct call
@@ -76,12 +81,16 @@ function run_loop!(oniter::Function)
         # endloop callback
         run_callbacks!("Server.loop.callbacks.enditer")
 
+        # oniter counter
+        iter_counter += 1
+        setstate!("Server.loop.trigger.iter.counter", iter_counter)
+
         # end delim
         println()
 
-    end
+    end # server loop
     
-    run_callbacks!("Server.loop.callbacks.atexit")
+    run_callbacks!("Server.loop.callbacks.break")
 
 end
 run_loop!() = run_loop!(_do_nothing)

@@ -20,7 +20,7 @@ module ObaServers
     import EasyEvents
     import EasyEvents: AbstractEvent
     import EasyEvents: FileContentEvent, FileMTimeEvent, FileSizeEvent
-    import EasyEvents: pull_event!, istraking, update!
+    import EasyEvents: pull_event!, istraking, update!, event_type!
     import JSON
     import FilesTreeTools
     import FilesTreeTools: walkdown
@@ -40,6 +40,7 @@ module ObaServers
     include("SubSys/Server.config.jl")
     include("SubSys/Server.init.jl")
     include("SubSys/Server.loop.jl")
+    include("SubSys/Server.onepass.jl")
     include("SubSys/TriggerFiles.jl")
     include("SubSys/Vault.base.jl")
 

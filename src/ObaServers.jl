@@ -45,10 +45,6 @@ module ObaServers
     include("SubSys/Vault.base.jl")
 
     ObaBase.@_exportall_non_underscore()
-
-    function __init__()
-
-    end
-
+    
     #! include .
 end

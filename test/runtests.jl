@@ -8,7 +8,7 @@ using Test
     let
         vault_dir = joinpath(pkgdir(ObaServers), "testvault")
         @assert isdir(vault_dir)
-        run_init!(vault_dir) do
+        ObaServer_run_init!(vault_dir) do
             # onsetup
             
             # config
@@ -70,7 +70,7 @@ using Test
                 
             end
         end
-        run_loop!()
+        ObaServer_run_loop!()
     end
     
 end

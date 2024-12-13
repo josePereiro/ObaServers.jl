@@ -1,5 +1,5 @@
 ## ---.- .-  ..- .- . ... . - -. -.- .. .- . -.- .- .- 
-# This is called at `run_init!`
+# This is called at `ObaServer_run_init!`
 # It will register all builtin callbacks
 # This way the callbacks can be empty!ed at reset
 const BUILT_IN_PRIORITY = typemin(Int) ÷ 2

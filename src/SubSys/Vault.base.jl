@@ -67,7 +67,7 @@ function _Vault_notes_onepass_cb!()
 
         run_callbacks!("Vault.callbacks.note.foreach", fn)
         
-        # parse if new or modified
+        # detect is new
         _etype = event_type!(fevt, fn)
         _etype === :same && return
         if _etype === :new

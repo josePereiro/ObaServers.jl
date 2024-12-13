@@ -1,6 +1,6 @@
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 # DefaultInit
-function run_init!(onsetup::Function, vault_dir::AbstractString;
+function ObaServer_run_init!(onsetup::Function, vault_dir::AbstractString;
         # dev_mode = false # TODO: move to onsetup
         doempty = true,
         source_config = true,
@@ -33,7 +33,7 @@ function run_init!(onsetup::Function, vault_dir::AbstractString;
     setstate!("Server.init.flags.runned", true)
 
 end
-run_init!(vault_dir::AbstractString) = run_init!(_do_nothing, vault_dir)
+ObaServer_run_init!(vault_dir::AbstractString) = ObaServer_run_init!(_do_nothing, vault_dir)
 
 
 

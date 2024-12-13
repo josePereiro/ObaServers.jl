@@ -1,8 +1,8 @@
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-function run_onepass!(onsetup::Function, path::String; reinit = true)
+function ObaServer_run_onepass!(onsetup::Function, path::String; reinit = true)
     runned = getstate("Server.init.flags.runned", false)
     doinit = !runned || reinit
-    doinit && run_init!(path) do
+    doinit && ObaServer_run_init!(path) do
         # - .. - .- ..-. .-- - -.... . -- - .- - .-.- .- .-.
         # callbacks
         
@@ -21,5 +21,5 @@ function run_onepass!(onsetup::Function, path::String; reinit = true)
     # reset pass
     setstate!("Server.loop.flags.break", false)
     # run
-    run_loop!()
+    ObaServer_run_loop!()
 end

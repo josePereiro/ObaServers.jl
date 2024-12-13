@@ -13,11 +13,11 @@ function _Server_loop_onsetup_cb!()
 end
 
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
-function run_loop!(oniter::Function)
+function ObaServer_run_loop!(oniter::Function)
 
     
     !getstate("Server.init.flags.runned", false) && 
-        error("Do `run_init!` first!")
+        error("Do `ObaServer_run_init!` first!")
 
     # counters
     iter_counter = 0
@@ -93,4 +93,4 @@ function run_loop!(oniter::Function)
     run_callbacks!("Server.loop.callbacks.break")
 
 end
-run_loop!() = run_loop!(_do_nothing)
+ObaServer_run_loop!() = ObaServer_run_loop!(_do_nothing)

@@ -35,4 +35,10 @@ function _register_builtin_callbacks!()
     register_callback!(_Parser_run_onparsed_cb!, 
         "Vault.callbacks.notes.endpass", BUILT_IN_PRIORITY
     )
+
+    # "Server.loop.callbacks.trigger.onhit"
+    register_callback!(_Vault_onhit_cb!, 
+        "Server.loop.callbacks.trigger.onhit", 
+        BUILT_IN_PRIORITY
+    )
 end

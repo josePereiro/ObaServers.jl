@@ -1,10 +1,18 @@
 # load config file
-function source_configfile!()
+function configfile()
     root = getstate("Vault.root.path")
     cfile = joinpath(root, "ObaServer.json")
-    isfile(cfile) || return
-    config = _read_json(cfile)
+    try
+        return _read_json(cfile)
+        catch _; return Dict{String, Any}()
+    end
+end
+
+# load config file and merge with state
+function source_configfile!()
+    config = configfile()
     for (k, v) in config
         setstate!(k, v)
     end
 end
+

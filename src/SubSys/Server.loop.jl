@@ -92,5 +92,7 @@ function ObaServer_run_loop!(oniter::Function)
     
     run_callbacks!("Server.loop.callbacks.break")
 
+    return nothing
+
 end
 ObaServer_run_loop!() = ObaServer_run_loop!(_do_nothing)

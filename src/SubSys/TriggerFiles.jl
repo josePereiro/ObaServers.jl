@@ -51,3 +51,5 @@ function trigger_json()
     _trfile = getstate("TriggerFile.path")
     return _read_json(_trfile)
 end
+
+## .--- .- .- .--. ..- .- -.-. ...  . -- - -- 

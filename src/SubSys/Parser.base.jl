@@ -39,6 +39,7 @@ end
 # called on "Vault.callbacks.notes.endpass"
 _Parser_run_onparsed_cb!() = run_callbacks!("Parser.callbacks.vault.onparsed")
 
+
 # -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
 function noteast(name)
     fn = note_path(name)

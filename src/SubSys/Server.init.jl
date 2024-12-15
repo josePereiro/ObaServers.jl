@@ -2,12 +2,12 @@
 # DefaultInit
 function ObaServer_run_init!(onsetup::Function, vault_dir::AbstractString;
         # dev_mode = false # TODO: move to onsetup
-        doempty = true,
+        reset = true,
         source_config = true,
     )
 
     # empty server
-    doempty && emptystate!();
+    reset && emptystate!();
     
     # required initial stuff
     setstate!("Vault.root.path", abspath(vault_dir))
@@ -31,6 +31,8 @@ function ObaServer_run_init!(onsetup::Function, vault_dir::AbstractString;
 
     # akn flag
     setstate!("Server.init.flags.runned", true)
+
+    return nothing
 
 end
 ObaServer_run_init!(vault_dir::AbstractString) = ObaServer_run_init!(_do_nothing, vault_dir)

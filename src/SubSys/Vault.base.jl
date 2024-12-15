@@ -86,8 +86,13 @@ function _Vault_notes_onepass_cb!()
     return 
 end
 
-function focused_note()
-    json::Dict = trigger_json()
+# -.-. -. -- - . - . . .- --. -. -.-. -.----- . .. .
+function _Vault_onhit_cb!()
+    setstate!("Vault.notes.focused", focused_note())
+end
+
+
+function focused_note(json::Dict = trigger_json())
     curr_note::String = get(json, "path", "")
     isempty(curr_note) && return ""
     curr_note = note_path(curr_note)

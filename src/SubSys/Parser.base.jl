@@ -104,10 +104,10 @@ end
 #     return asts[file]
 # end
 
-# export foreach_noteast
-# function foreach_noteast(f::Function, os::ObaServer)
-#     foreach_note(os) do file
-#         ast = noteast(os, file)
-#         return f(ast)
-#     end
-# end
+export foreach_noteast
+function foreach_noteast(f::Function, os::ObaServer)
+    foreach_note(os) do file
+        ast = noteast!(file)
+        return f(ast)
+    end
+end

@@ -17,7 +17,7 @@ using Test
             # callbacks
             register_callback!("Server.init.callbacks.onsetup") do
                 # test configuration loading
-                # see ObaServer.json
+                # see Oba.json
                 @time getstate("test.config") === 123
             end
             

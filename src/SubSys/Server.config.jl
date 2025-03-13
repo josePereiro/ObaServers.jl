@@ -1,7 +1,7 @@
 # load config file
 function configfile()
     root = getstate("Vault.root.path")
-    cfile = joinpath(root, "ObaServer.json")
+    cfile = joinpath(root, "Oba.json")
     try
         return _read_json(cfile)
         catch _; return Dict{String, Any}()

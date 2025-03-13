@@ -1,6 +1,6 @@
 ## .--- .- .- .--. ..- .- -.-. ...  . -- - -- 
 _oba_plugin_trigger_file(vault::AbstractString) = 
-    joinpath(vault, ".obsidian", "plugins", "oba-plugin", "trigger-signal.json")
+    joinpath(vault, ".obsidian", "plugins", "oba-plugin", "backend-signal.json")
 
 ## .--- .- .- .--. ..- .- -.-. ...  . -- - -- 
 function _TriggerFile_onsetup_cb!()

@@ -17,6 +17,7 @@ module ObaServers
     using ObaBase
     import ObaBase: _generate_rand_id
     using ObaASTs
+    import MassExport
     import EasyEvents
     import EasyEvents: AbstractEvent
     import EasyEvents: FileContentEvent, FileMTimeEvent, FileSizeEvent
@@ -44,7 +45,7 @@ module ObaServers
     include("SubSys/TriggerFiles.jl")
     include("SubSys/Vault.base.jl")
 
-    ObaBase.@_exportall_non_underscore()
+    MassExport.@exportall_non_underscore()
     
     #! include .
 end
